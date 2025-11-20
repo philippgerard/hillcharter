@@ -1,7 +1,6 @@
 #!/usr/bin/env node
 
 import prompts from 'prompts';
-import { Client } from '@notionhq/client';
 import puppeteer from 'puppeteer';
 import { createHillChartHTML } from './lib/hill-chart-generator.js';
 import fs from 'fs/promises';
@@ -250,42 +249,6 @@ async function collectProjectData() {
   return { chartName, points };
 }
 
-async function getNotionConfig() {
-  const { uploadToNotion } = await prompts({
-    type: 'confirm',
-    name: 'uploadToNotion',
-    message: 'Upload to Notion?',
-    initial: false
-  });
-
-  if (!uploadToNotion) {
-    return null;
-  }
-
-  const response = await prompts([
-    {
-      type: 'text',
-      name: 'apiKey',
-      message: 'Notion API Key (integration token):',
-      validate: value => value.length > 0 ? true : 'API key is required'
-    },
-    {
-      type: 'text',
-      name: 'pageId',
-      message: 'Notion Page ID (from URL):',
-      validate: value => value.length > 0 ? true : 'Page ID is required'
-    },
-    {
-      type: 'text',
-      name: 'title',
-      message: 'Chart title:',
-      initial: `Hill Chart - ${new Date().toISOString().split('T')[0]}`
-    }
-  ]);
-
-  return response;
-}
-
 function calculateHillY(x) {
   // Hill chart uses a parabola for the curve
   // Peak is at x=50, y=100
@@ -422,78 +385,6 @@ async function saveToOutputFolder(imagePath, chartName) {
   return outputPath;
 }
 
-async function uploadToNotion(imagePath, notionConfig) {
-  console.log('\n📤 Uploading to Notion...');
-
-  const notion = new Client({ auth: notionConfig.apiKey });
-
-  // Read image as buffer
-  const imageBuffer = await fs.readFile(imagePath);
-  const imageBase64 = imageBuffer.toString('base64');
-
-  // Create a new block with the image
-  // Note: Notion API requires images to be hosted somewhere
-  // For now, we'll add it as a file block
-
-  try {
-    await notion.blocks.children.append({
-      block_id: notionConfig.pageId,
-      children: [
-        {
-          object: 'block',
-          type: 'heading_2',
-          heading_2: {
-            rich_text: [
-              {
-                type: 'text',
-                text: { content: notionConfig.title }
-              }
-            ]
-          }
-        },
-        {
-          object: 'block',
-          type: 'paragraph',
-          paragraph: {
-            rich_text: [
-              {
-                type: 'text',
-                text: {
-                  content: `Generated on ${new Date().toLocaleString()}`
-                }
-              }
-            ]
-          }
-        },
-        // Note: Direct base64 image upload not supported by Notion API
-        // User will need to manually upload the saved image
-        {
-          object: 'block',
-          type: 'paragraph',
-          paragraph: {
-            rich_text: [
-              {
-                type: 'text',
-                text: {
-                  content: `⚠️ Please manually upload the generated image from: ${imagePath}`
-                }
-              }
-            ]
-          }
-        }
-      ]
-    });
-
-    console.log('✅ Notion page updated!');
-    console.log(`\n📁 Chart saved to: ${imagePath}`);
-    console.log('⚠️ Note: Please manually upload the image to Notion (API limitation)');
-
-  } catch (error) {
-    console.error('❌ Error uploading to Notion:', error.message);
-    console.log(`\n📁 Chart saved locally to: ${imagePath}`);
-  }
-}
-
 async function main() {
   try {
     // Try to parse CLI arguments first
@@ -516,22 +407,11 @@ async function main() {
       return;
     }
 
-    // In CLI mode, skip Notion prompts (only save locally)
-    // In interactive mode, prompt for Notion upload
-    const notionConfig = cliData ? null : await getNotionConfig();
+    // Generate the chart image
+    const { imagePath, tempDir } = await generateChartImage(points, chartName);
 
-    // Use chart name as title, or Notion config title if uploading
-    const title = notionConfig?.title || chartName;
-
-    const { imagePath, tempDir } = await generateChartImage(points, title);
-
-    if (notionConfig && notionConfig.apiKey && notionConfig.pageId) {
-      // Upload to Notion
-      await uploadToNotion(imagePath, notionConfig);
-    } else {
-      // Save locally only
-      await saveToOutputFolder(imagePath, chartName);
-    }
+    // Save to outputs folder
+    await saveToOutputFolder(imagePath, chartName);
 
     console.log('\n✨ Done!');
 

@@ -1,7 +1,7 @@
 {
   "name": "@prosperity/hill-chart-publisher",
   "version": "1.0.0",
-  "description": "CLI tool to generate and publish hill charts to Notion",
+  "description": "CLI tool to generate beautiful hill charts for project progress visualization",
   "type": "module",
   "main": "index.js",
   "scripts": {
@@ -9,11 +9,10 @@
   },
   "keywords": [
     "hill-chart",
-    "notion",
-    "project-management"
+    "project-management",
+    "visualization"
   ],
   "dependencies": {
-    "@notionhq/client": "^2.2.15",
     "d3": "^7.9.0",
     "jsdom": "^25.0.1",
     "node-fetch": "^3.3.2",

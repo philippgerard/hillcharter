@@ -1,6 +1,6 @@
 # Hill Chart Publisher
 
-Automated CLI tool to generate beautiful hill charts. Save them locally or publish to Notion pages. Stop drawing project status by hand!
+Automated CLI tool to generate beautiful hill charts and save them locally. Stop drawing project status by hand!
 
 ## What are Hill Charts?
 
@@ -19,51 +19,27 @@ January 20, 2025        ← Auto-generated date
 
 ## Features
 
-- 📊 Interactive CLI to input project status
+- 📊 Three usage modes: interactive CLI, JSON (for LLMs), and CLI arguments
 - 🎨 Beautiful D3.js-generated hill charts
 - 🖼️ Automatic PNG export to `outputs/` folder
-- 📝 Optional Notion integration for publishing
 - 🌈 **Auto-assigned colors** - each point gets a unique color from a vibrant palette
 - 📍 **Smart label positioning** - labels extend away from chart edges for perfect readability
 - 📁 Organized filename format: `chart-name-2025-01-20.png`
 - 🔄 **Automatic versioning** - never overwrites existing files, auto-increments version numbers
+- 🤖 **LLM-friendly** - perfect for automation with Claude Code and other AI tools
 
 ## Prerequisites
 
 - Node.js 22 or higher
-- Notion account with API access (optional, only if uploading to Notion)
 
 ## Setup
 
-### 1. Install Dependencies
+Install dependencies:
 
 ```bash
-cd hill-chart-publisher
+cd hillcharter
 npm install
 ```
-
-### 2. (Optional) Setup Notion Integration
-
-**Only required if you want to upload charts to Notion.**
-
-#### Get Your Notion API Key
-
-1. Go to [https://www.notion.so/my-integrations](https://www.notion.so/my-integrations)
-2. Click "+ New integration"
-3. Give it a name (e.g., "Hill Chart Publisher")
-4. Select the workspace where you want to publish charts
-5. Click "Submit"
-6. Copy the "Internal Integration Token" (starts with `secret_`)
-
-#### Share Notion Page with Integration
-
-1. Open the Notion page where you want to publish hill charts
-2. Click "Share" in the top right
-3. Click "Invite"
-4. Select your integration from the list
-5. Copy the page ID from the URL:
-   - URL format: `https://notion.so/Page-Title-abc123def456...`
-   - Page ID is the part after the last dash: `abc123def456...`
 
 ## Usage
 
@@ -116,9 +92,9 @@ node index.js --project "Sprint 5 Progress" \
 
 **Notes for all modes:**
 - Charts are automatically saved to `outputs/` folder
-- Notion upload is only available in interactive mode
 - Progress values must be between 0-100
 - Colors are automatically assigned
+- Files are automatically versioned if duplicates exist
 
 ## Programmatic Usage with LLMs (Claude Code, etc.)
 
@@ -157,28 +133,14 @@ The tool will prompt you for:
    - Colors are **automatically assigned** from a diverse palette
    - Add as many points as needed
 
-3. **Upload to Notion?**
-   - **No (default):** Saves chart to `outputs/chart-name-2025-01-20.png`
-   - **Yes:** Prompts for Notion credentials and uploads
-
-### Local-Only Mode (No Notion)
-
-If you choose **not** to upload to Notion, the tool will:
+The tool will then:
 1. Generate a beautiful hill chart
 2. Save it to `outputs/` folder with format: `project-name-YYYY-MM-DD.png`
 3. Done! Use the image wherever you need
 
-### Notion Upload Mode
+## Example Workflows
 
-If you choose to upload to Notion, the tool will:
-1. Generate a beautiful hill chart
-2. Create a Notion block with the chart title and timestamp
-3. Save the PNG locally
-4. Provide the image path for manual upload (Notion API limitation)
-
-## Example Workflow
-
-### Local-Only Mode (Default)
+### Interactive Mode Example
 
 ```bash
 $ npm run publish-chart
@@ -189,7 +151,7 @@ Hill Chart Guide:
   0-50%: Figuring things out (unknowns, research, planning)
   50-100%: Making it happen (execution, completion)
 
-✔ Hill chart name: Sprint 5 Progress    (you can edit the default "Hill Chart" text)
+✔ Hill chart name: Sprint 5 Progress
 
 Now add points to the chart:
 
@@ -201,36 +163,30 @@ Now add points to the chart:
 ✔ Current progress: 📋 25-40% - Planning and designing
 ✔ Add another point? no
 
-✔ Upload to Notion? no
+🎨 Generating hill chart...
+✅ Chart generated successfully
+
+💾 Saving to outputs folder...
+✅ Chart saved successfully!
+📁 Location: /Users/you/hillcharter/outputs/sprint-5-progress-2025-01-20.png
+
+✨ Done!
+```
+
+### JSON Mode Example
+
+```bash
+$ node index.js --json '{"project":"Q1 Roadmap","points":[{"name":"Auth","progress":75},{"name":"API","progress":45}]}'
+
+📊 Generating hill chart for: Q1 Roadmap
+📍 Points: 2
 
 🎨 Generating hill chart...
 ✅ Chart generated successfully
 
 💾 Saving to outputs folder...
 ✅ Chart saved successfully!
-📁 Location: /Users/you/hill-chart-publisher/outputs/sprint-5-progress-2025-01-20.png
-
-✨ Done!
-```
-
-### With Notion Upload
-
-If you answer "yes" to "Upload to Notion?", you'll also be prompted for:
-
-```bash
-✔ Upload to Notion? yes
-✔ Notion API Key: secret_***
-✔ Notion Page ID: abc123def456
-✔ Chart title: Q1 2024 - Sprint 3
-
-🎨 Generating hill chart...
-✅ Chart generated successfully
-
-📤 Uploading to Notion...
-✅ Notion page updated!
-
-📁 Chart saved to: /tmp/hill-chart-xyz/chart.png
-⚠️ Note: Please manually upload the image to Notion (API limitation)
+📁 Location: /Users/you/hillcharter/outputs/q1-roadmap-2025-01-20.png
 
 ✨ Done!
 ```
@@ -292,20 +248,6 @@ This lets you:
 - Compare different iterations
 - Never lose previous charts
 
-## Notion API Limitation
-
-⚠️ **Note for Notion users:** The Notion API doesn't support directly uploading images as base64 or from local files.
-
-When uploading to Notion, the tool will:
-1. Create a text block in your Notion page with the chart title and timestamp
-2. Save the PNG image locally
-3. You'll need to manually drag-and-drop the image into your Notion page
-
-**Alternatives:**
-- **Use local-only mode** (default): Skip Notion upload entirely, just generate charts to `outputs/` folder
-- **Workaround for automation:** Host images on S3/Cloudinary and use external URLs
-- **Future enhancement:** Using Notion's file upload endpoints (requires additional setup)
-
 ## Customization
 
 ### Modify Chart Appearance
@@ -330,27 +272,22 @@ Puppeteer needs Chrome/Chromium to generate images. Install it:
 npx puppeteer browsers install chrome
 ```
 
-### "Invalid API Key"
+### JSON Validation Errors
 
-Make sure:
-- Your Notion integration token starts with `secret_`
-- The integration has access to the workspace
-- The page is shared with the integration
-
-### "Page not found"
-
-Make sure:
-- You've shared the Notion page with your integration
-- The page ID is correct (from the URL)
+Make sure your JSON input:
+- Has a valid `project` field (string)
+- Has a `points` array with at least one point
+- Each point has `name` (string) and `progress` (number 0-100)
 
 ## Future Enhancements
 
 Potential improvements:
-- Save configuration to avoid re-entering Notion credentials
-- Automated image hosting for direct Notion upload
 - Historical tracking (save previous chart states)
 - Export to other formats (SVG, PDF)
-- Support Notion upload in CLI/JSON modes
+- Animated progress transitions
+- Comparison view between different chart versions
+- Custom color schemes and themes
+- Batch processing from CSV/JSON files
 
 ## License
 
