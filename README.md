@@ -20,8 +20,10 @@ January 20, 2025        ← Auto-generated date
 ## Features
 
 - 📊 Three usage modes: interactive CLI, JSON (for LLMs), and CLI arguments
+- 🤖 **MCP Server** - Use directly in Claude Desktop and other MCP clients
 - 🎨 Beautiful D3.js-generated hill charts
 - 🖼️ Automatic PNG export to `outputs/` folder
+- 📤 **Notion integration** - Upload charts directly to Notion pages via MCP
 - 🌈 **Auto-assigned colors** - each point gets a unique color from a vibrant palette
 - 📍 **Smart label positioning** - labels extend away from chart edges for perfect readability
 - 📁 Organized filename format: `chart-name-2025-01-20.png`
@@ -41,7 +43,47 @@ cd hillcharter
 npm install
 ```
 
-## Usage
+## MCP Server (Use with Claude Desktop)
+
+Hillcharter includes an MCP server that lets you generate and upload hill charts directly from Claude Desktop!
+
+**Quick Setup:**
+
+1. Install dependencies (see above)
+2. Add to your Claude Desktop config (`~/Library/Application Support/Claude/claude_desktop_config.json`):
+
+```json
+{
+  "mcpServers": {
+    "hillcharter": {
+      "command": "node",
+      "args": ["/absolute/path/to/hillcharter/mcp-server.js"],
+      "env": {
+        "NOTION_API_KEY": "your_notion_token_here"
+      }
+    }
+  }
+}
+```
+
+3. Restart Claude Desktop
+
+**Usage in Claude:**
+
+Just ask Claude to generate hill charts naturally:
+
+> Generate a hill chart for my Sprint 5 with these tasks:
+> - User Auth at 60%
+> - Database at 85%
+> - API at 30%
+
+Or upload to Notion:
+
+> Upload the chart to my Notion page abc123def456
+
+For detailed setup instructions, see [MCP_SETUP.md](MCP_SETUP.md).
+
+## CLI Usage
 
 The tool supports **three modes**: interactive, JSON (ideal for LLMs), and CLI arguments.
 

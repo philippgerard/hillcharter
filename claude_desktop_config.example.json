@@ -1,0 +1,11 @@
+{
+  "mcpServers": {
+    "hillcharter": {
+      "command": "node",
+      "args": ["/absolute/path/to/hillcharter/mcp-server.js"],
+      "env": {
+        "NOTION_API_KEY": "secret_your_notion_integration_token_here"
+      }
+    }
+  }
+}

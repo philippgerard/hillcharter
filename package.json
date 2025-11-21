@@ -4,8 +4,12 @@
   "description": "CLI tool to generate beautiful hill charts for project progress visualization",
   "type": "module",
   "main": "index.js",
+  "bin": {
+    "hillcharter-mcp": "./mcp-server.js"
+  },
   "scripts": {
-    "publish-chart": "node index.js"
+    "publish-chart": "node index.js",
+    "mcp": "node mcp-server.js"
   },
   "keywords": [
     "hill-chart",
@@ -13,7 +17,9 @@
     "visualization"
   ],
   "dependencies": {
+    "@modelcontextprotocol/sdk": "^1.0.4",
     "d3": "^7.9.0",
+    "form-data": "^4.0.1",
     "jsdom": "^25.0.1",
     "node-fetch": "^3.3.2",
     "prompts": "^2.4.2",
