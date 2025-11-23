@@ -47,14 +47,25 @@ This will:
 
 Hillcharter includes an MCP server that lets you generate and upload hill charts directly from Claude Desktop!
 
+### Installation
+
+**Step 1: Install hillcharter globally**
+
+First, install hillcharter globally on your system:
+
+```bash
+npm install -g github:philippgerard/hillcharter
+```
+
+**Step 2: Add to your MCP configuration**
+
 Add to your `.mcp.json` or Claude Desktop config:
 
 ```json
 {
   "mcpServers": {
     "hillcharter": {
-      "command": "npx",
-      "args": ["-y", "github:philippgerard/hillcharter"],
+      "command": "hillcharter-mcp",
       "env": {
         "NOTION_API_KEY": "your_notion_api_key_here"
       }
@@ -62,6 +73,8 @@ Add to your `.mcp.json` or Claude Desktop config:
   }
 }
 ```
+
+**Note:** After updating your MCP config, restart Claude Desktop for the changes to take effect.
 
 **Usage in Claude:**
 
