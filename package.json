@@ -1,0 +1,57 @@
+{
+  "name": "hillcharter",
+  "version": "1.0.0",
+  "description": "MCP server and CLI tool to generate beautiful hill charts for project progress visualization. Hill charts visualize project phases: 0-50% for figuring things out (unknowns, research, planning) and 50-100% for making it happen (execution, completion).",
+  "type": "module",
+  "main": "index.js",
+  "bin": {
+    "hillcharter-mcp": "./mcp-server.js",
+    "hillcharter": "./index.js"
+  },
+  "scripts": {
+    "publish-chart": "node index.js",
+    "mcp": "node mcp-server.js"
+  },
+  "keywords": [
+    "hill-chart",
+    "project-management",
+    "visualization",
+    "mcp",
+    "mcp-server",
+    "model-context-protocol",
+    "progress-tracking",
+    "basecamp",
+    "d3",
+    "charts"
+  ],
+  "author": "Philipp Gerard",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/philippgerard/hillcharter.git"
+  },
+  "bugs": {
+    "url": "https://github.com/philippgerard/hillcharter/issues"
+  },
+  "homepage": "https://github.com/philippgerard/hillcharter#readme",
+  "files": [
+    "index.js",
+    "mcp-server.js",
+    "lib/",
+    "README.md",
+    "LICENSE"
+  ],
+  "dependencies": {
+    "@modelcontextprotocol/sdk": "^1.0.4",
+    "d3": "^7.9.0",
+    "form-data": "^4.0.1",
+    "jsdom": "^25.0.1",
+    "node-fetch": "^3.3.2",
+    "prompts": "^2.4.2",
+    "puppeteer": "^23.11.1",
+    "rbush": "^3.0.1"
+  },
+  "engines": {
+    "node": ">=22.0.0"
+  }
+}
